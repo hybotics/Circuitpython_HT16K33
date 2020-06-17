@@ -1,7 +1,0 @@
-{
-    "python.formatting.provider": "black",
-    "editor.formatOnSave": true,
-	"editor.fontSize": 20,
-    "editor.detectIndentation": false,
-    "editor.insertSpaces": false
-}
