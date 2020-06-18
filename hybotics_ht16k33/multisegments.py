@@ -9,7 +9,7 @@ from hybotics_ht16k33.segments import Seg14x4
 class MultiSeg14x4(Seg14x4):
     """Docstring"""
 
-    _DEFAULT_DISPLAY_BRIGHTNESS = const(0.1)
+    _DEFAULT_DISPLAY_BRIGHTNESS = 0.1
 
     def __init__(
         self,
@@ -26,14 +26,14 @@ class MultiSeg14x4(Seg14x4):
         self._devices = []
 
         if isinstance(self._address, int):
-            print("DEBUG: (display.py) single display")
+            print("DEBUG: (multisegments.py) single display")
             self._devices = Seg14x4(i2c, self._address, auto_write, brightness)
         elif isinstance(self._address, list):
-            print("DEBUG: (display.py) multi-display")
+            print("DEBUG: (multisegments.py) multi-display")
 
             for index, addr in enumerate(self._address):
                 print(
-                    "DEBUG (display.py) display {0} at self._address = {1}".format(
+                    "DEBUG (multisegments.py) display {0} at self._address = {1}".format(
                         index, hex(addr)
                     )
                 )
@@ -45,7 +45,18 @@ class MultiSeg14x4(Seg14x4):
 
             self._NUMBER_OF_DISPLAYS = const(len(self.devices))
             self._NUMBER_OF_DIGITS = const(self._NUMBER_OF_DISPLAYS * 4)
-            print("DEBUG (display.py) There are {0} displays".format(len(self.devices)))
+            print(
+                "DEBUG (multisegments.py) There are {0} displays".format(
+                    len(self.devices)
+                )
+            )
+
+    def clear(self, show=True):
+        for nr, _ in enumerate(self._address):
+            self.devices[nr].fill(0)
+
+        if show:
+            self.devices[nr].show()
 
     def fill(self, color):
         """Fill the whole display with a given color."""
@@ -71,7 +82,7 @@ class MultiSeg14x4(Seg14x4):
         if self._auto_write:
             self.show()
 
-    def multi_text(self, text, show=True, scroll=False):
+    def _multi_text(self, text, show=True, scroll=False):
         """Docstring"""
         length = len(text)
 
@@ -109,12 +120,6 @@ class MultiSeg14x4(Seg14x4):
         Initialize
         """
         length = len(text)
-
-        # This will probably not be needed for scrolling
-        if length > self._NUMBER_OF_DIGITS:
-            raise ValueError(
-                "Input overflow - '{0}' is too long for the display!".format(text)
-            )
 
         char_nr = 0
         disp_index = 0
